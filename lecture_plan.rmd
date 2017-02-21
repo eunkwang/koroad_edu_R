@@ -1,0 +1,39 @@
+---
+title: Koroad R 강의 계획서
+author: <a href = "https://github.com/ntels-BI">ntels BI</a>
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    fig_height: 6
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+---
+
+<style type="text/css">@import url("https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/yeti/bootstrap.min.css")</style><br>
+
+```{r env, echo = F, warning = F, message = F}
+pacman::p_load("dplyr")
+```
+
+## 강의제목
+
+**조금 더 세련된 데이터 분석을 도와줄 R 프로그래밍**
+
+## 강의목적
+
+데이터 분석에 자주 언급되고 쓰이고 있는 R 언어와 프로그래밍의 중요성에 대해 언급합니다.  
+세련된 자료처리 방법의 가능성과 재현가능한 연구의 예제들을 소개하여 코딩의 중요성을 전달하고,  
+R 과 같은 언어의 공부의욕을 고취시키는 것이 강의의 목적입니다.  
+
+## 목차
+
+1. 데이터 분석 패러다임
+2. 데이터 분석에 프로그래밍을 접목하려는 목적
+3. R이란 언어를 통해 프로그래밍과 데이터 분석의 첫번째 융합
+4. 오픈소스를 이용한 분석의 자유도 높이기
+5. 데이터의 오픈과 공유 / 데이터 분석결과의 배포와 소통
+
+## 실습자료
+
+강의 PT 및 실습자료 전부 [Github](https://github.com/ntels-BI/koroad_edu_R) 를 통해 다운로드 할 수 있게 할 예정입니다.  

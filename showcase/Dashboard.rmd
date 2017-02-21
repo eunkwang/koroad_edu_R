@@ -1,0 +1,223 @@
+---
+title: Koroad Dashboard
+runtime : shiny
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    theme: yeti
+---
+
+```{r global, include = F}
+pacman::p_load("knitr", "dplyr", "ggplot2", "data.table", "lubridate",
+               "shiny", "formattable", "wordcloud2", "KoNLP", "plotly",
+               "forcats", "DT", "flexdashboard")
+theme_set(theme_minimal(base_family = "AppleGothic"))
+```
+
+Sidebar {.sidebar}
+=====================================
+
+```{r}
+br()
+actionButton("act", "Change apply")
+fileInput("ui1", "Choose CSV File (Only)", accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))
+selectInput("ui2", "Choose Year", 2010:2020)
+
+d <- reactive({
+  inFile <- input$ui1
+  fread(inFile$datapath, encoding = "UTF-8") %>% tbl_df %>% 
+    select(date = V1, fullText = V2 , method = V3, class1 = V4, class2 = V5, 
+           qKind = V6, term = V7, dm1 = V8, dm2 = V9, dm3 = V10, satisfaction = V11) %>% 
+    mutate(date = ymd(date), complaint = qKind == "진정(불만)") %>% 
+    dplyr::filter(year(date) == input$ui2)
+})
+```
+
+```{r eval = F}
+d <- fread("./data/minwon.csv", encoding = "UTF-8") %>% tbl_df %>% 
+    select(date = V1, fullText = V2 , method = V3, class1 = V4, class2 = V5, 
+           qKind = V6, term = V7, dm1 = V8, dm2 = V9, dm3 = V10, satisfaction = V11) %>% 
+    mutate(date = ymd(date), complaint = qKind == "진정(불만)") %>% 
+    dplyr::filter(year(date) == 2016)
+```
+
+Rawdata
+=====================================
+
+```{r}
+p("Using DT package 🤧🤧🤧")
+renderDataTable({
+  req(input$act)
+  isolate({
+    d() %>% 
+      mutate(fullText = paste(strtrim(fullText, 100), "...")) %>% 
+      datatable
+  })
+})
+```
+
+Summary
+=====================================
+
+Row
+-------------------------------------
+
+### Wordcloud
+
+```{r}
+renderWordcloud2({
+  req(input$act)
+  isolate({
+    d_wc <- d() %>% select(fullText) %>% 
+      mutate(fullText = gsub("[[:punct:][:digit:]]", "", fullText)) %>% 
+      dplyr::filter(nchar(fullText) <= 50) %>% 
+      unlist(use.names = F)
+    
+    nounFreq <- extractNoun(d_wc) %>% 
+      unlist %>% table %>% as.data.frame %>% tbl_df
+    colnames(nounFreq) <- c("noun", "freq")
+    nounFreq <- nounFreq[grep("[[:punct:]]", nounFreq$noun, invert = T), ] %>% 
+      mutate(noun = as.character(noun)) %>% 
+      dplyr::filter(nchar(noun) != 1) %>% 
+      arrange(-freq) %>% 
+      slice(1:200)
+    
+    wordcloud2(as.data.frame(nounFreq), fontFamily = "AppleGothic",
+               minRotation = -pi/6, maxRotation = -pi/6, rotateRatio = 1)
+  })
+})
+```
+
+### Top 10 keyword
+
+```{r out.width = "80%"}
+renderPlotly({
+  req(input$act)
+  isolate({
+    d_tk <- d() %>% select(fullText) %>% 
+      mutate(fullText = gsub("[[:punct:][:digit:]]", "", fullText)) %>% 
+      dplyr::filter(nchar(fullText) <= 50) %>% 
+      unlist(use.names = F)
+    
+    nounFreq <- extractNoun(d_tk) %>% 
+      unlist %>% table %>% as.data.frame %>% tbl_df
+    colnames(nounFreq) <- c("noun", "freq")
+    
+    pd_tk <- nounFreq[grep("[[:punct:]]", nounFreq$noun, invert = T), ] %>% 
+      mutate(noun = as.character(noun)) %>% 
+      dplyr::filter(nchar(noun) != 1) %>% 
+      arrange(-freq) %>% 
+      slice(1:10)
+    
+    p_tk <- ggplot(pd_tk, aes(x = reorder(noun, freq), y = freq, fill = freq)) + 
+      geom_bar(stat = "identity") + 
+      labs(x = "빈도", y = "Keyword") + guides(fill = F) + 
+      scale_fill_gradient(low = "#39D520", high = "#2B9C19") + coord_flip()
+    ggplotly(p_tk)
+  })
+})
+```
+
+Row {.tabset}
+-------------------------------------
+
+### 담당본부 비율 1
+
+```{r}
+renderPlot({
+  req(input$act)
+  isolate({
+    d_dr <- d() %>% 
+      select(dm1) %>% 
+      mutate(dm1 = fct_lump(dm1, prop = .05, other_level = "etc")) %>% 
+      count(dm1)
+    
+    pie(d_dr$n, d_dr$dm1, family = "AppleGothic", border = "white")
+  })
+})
+```
+
+### 담당본부 비율 2
+
+```{r}
+renderPlot({
+  req(input$act)
+  isolate({
+    d_dr <- d() %>% 
+      select(dm2) %>% 
+      mutate(dm2 = fct_lump(dm2, n = 6, other_level = "etc")) %>%
+      count(dm2)
+    
+    pie(d_dr$n, d_dr$dm2, family = "AppleGothic", border = "white")
+  })
+})
+```
+
+### 담당본부 비율 3
+
+```{r}
+renderPlot({
+  req(input$act)
+  isolate({
+    d_dr <- d() %>% 
+      select(dm3) %>% 
+      mutate(dm3 = fct_lump(dm3, prop = .05, other_level = "etc")) %>% 
+      count(dm3)
+    
+    pie(d_dr$n, d_dr$dm3, family = "AppleGothic", border = "white")
+  })
+})
+```
+
+Trend
+=====================================
+
+Row
+-------------------------------------
+
+### 민원량
+
+```{r}
+renderPlotly({
+  req(input$act)
+  isolate({
+    pd_mr <- d() %>% 
+      select(date, qKind) %>% 
+      filter(qKind %in% c("건의(제안)", "진정(불만)", "질의(문의)", "칭찬(만족)")) %>% 
+      count(date, qKind)
+    
+    p_mr <- ggplot(pd_mr, aes(x = factor(month(date)), y = n, group = qKind, col = qKind)) + 
+      geom_line(stat = "identity") + 
+      labs(x = "월", y = "민원량", col = "")
+    ggplotly(p_mr)
+  })
+})
+```
+
+Row
+-------------------------------------
+
+### 평균처리기간
+
+```{r}
+renderPlotly({
+  req(input$act)
+  isolate({
+    pd_mt <- d() %>% 
+      select(date, term) %>% 
+      mutate(term = as.integer(term)) %>% na.omit %>% group_by(month = month(date)) %>% 
+      summarize(mean_term = mean(term))
+    
+    p_mt <- ggplot(pd_mt, aes(x = factor(month), y = mean_term, group = NA)) + 
+      geom_line(stat = "identity") + 
+      labs(x = "월", y = "평균처리기간")
+    ggplotly(p_mt)
+  })
+})
+```
+
+About
+=====================================
+
+본 Dashboard 는 한국도로교통공단의 민원데이터를 예제로 합니다.  
+사용된 도구는 [R](https://www.r-project.org/), [shiny](https://shiny.rstudio.com/), [flexdashboard](https://www.google.co.kr/search?q=flexdashboard&gws_rd=cr&ei=U2SlWKnQGIrR0ASH-rzACQ) 등이 있으며 ggplot2, [plotly](https://plot.ly/) 를 이용하여 데이터를 시각화 합니다.  
