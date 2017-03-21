@@ -2,7 +2,7 @@
 title: 조금 더 세련된 데이터분석을 도와줄 R
 author: <a href = "https://github.com/ntels-BI">ntels BI</a>
 date: "`r Sys.Date()`"
-output:
+output: 
   revealjs::revealjs_presentation:
     self_contained: true
     theme: beige
@@ -22,7 +22,7 @@ opts_chunk$set(fig.path = "output/figure/", fig.align = "center", out.width = "8
 ## 3C
 
 >- Connectivity
->- Cloud
+>- Cloud service
 >- Computer science
 
 ## Connectivity
@@ -31,7 +31,7 @@ opts_chunk$set(fig.path = "output/figure/", fig.align = "center", out.width = "8
 정보습득이 점점 쉬워지고 접근성이 높아짐
 >- **데이터의 습득**도 이와 마찬가지
 
-## Cloud
+## Cloud service
 
 >- 정보와 기술의 배포가 가속화 되고 있는 계기
 >- 최근에 이어 지금까지도  
@@ -44,12 +44,6 @@ opts_chunk$set(fig.path = "output/figure/", fig.align = "center", out.width = "8
 >- Computing power 를 이용해  
 독자적인 아이디어를 구현해 볼 수 있고 연구할 수 있게됨
 
----
-
-```{r echo = F}
-include_graphics("image/BigData_Landscape.png")
-```
-
 # 데이터 분석에 프로그래밍을 접목하려는 목적
 
 ------
@@ -58,7 +52,13 @@ include_graphics("image/BigData_Landscape.png")
 >- 자신의 아이디어를 믿고 주체적으로 표현 (Realize tool)
 >- 훌륭한 아이디어를 망각하지 않고 재활용
 
-# R을 통해 데이터 분석과 프로그래밍의 첫번째 융합
+------
+
+```{r echo = F}
+include_graphics("image/bigData_Landscape.png")
+```
+
+# R을 이용한 데이터 분석과 프로그래밍의 첫번째 융합
 
 ## Easy Start using Small Data
 
@@ -78,7 +78,7 @@ plot(x, y)
 abline(coefficients(lmfit)[1], coefficients(lmfit)[2])
 ```
 
-분석기반을 Small data 를 통해 만들고 시작
+Small data 를 통해 분석기반을 만들고 시작
 
 ------
 
@@ -95,7 +95,7 @@ for(i in 1:400){
 }
 ```
 
-데이터의 반영 및 결과 리포팅은 컴퓨터에게 맡김
+새로운 데이터의 갱신 및 결과 리포팅은 컴퓨터에게 맡김
 
 ------
 
@@ -163,7 +163,7 @@ include_graphics("image/wheel.jpg")
 
 > 바퀴를 다시 발명하지 마라 - 작자 미상
 
->- 오픈소스를 일방적으로 이용해 보면서 오픈소스 생태계 이해하기
+>- 오픈소스를 일방적으로 이용해 보면서 오픈소스 생태계 이해
 >- 기술확산에 자연스럽게 기여
 
 ## 오픈소스의 지향점
@@ -197,26 +197,60 @@ include_graphics("image/wheel.jpg")
 
 ## 오픈소스 라이센스 R
 
->- R 언어는 GPL(General Public License) 를 채택
->- 사용자들이 소프트웨어를 자유롭게 공유하고 내용을 수정하도록 보증
+>- R 언어는 [GPL(General Public License)](http://korea.gnu.org/documents/copyleft/gpl.ko.html) 를 채택
+>- 사용자들이 소프트웨어를 자유롭게 공유하고 내용을 수정해 볼 수 있는 자유를 보증
 >- R 상에서의 수많은 확장 패키지들 역시 GPL
 
 ## R package
 
->- R 을 이용할 때 분석의 자유도를 손쉽게 높일 수 있는 수단
->- R 사용자 들만의 또 다른 오픈소스 생태계로 볼 수 있음
+>- R 을 이용할 때 분석의 자유도를 손쉽게 높일 수 있는 생산성 수단
+>- R 사용자들 만의 또 다른 오픈소스 생태계로 볼 수 있음
+
+------
+
+[caret package](http://topepo.github.io/caret/index.html) for classification and regression training
+
+```{r echo = F}
+include_graphics("image/caret.png")
+```
+
+------
+
+[ggplot2 package](http://ggplot2.org/) for data visualization
+
+```{r echo = F}
+include_graphics("image/ggplot2.png")
+```
+
+------
+
+[dplyr](https://github.com/hadley/dplyr) + [tidyr](https://github.com/tidyverse/tidyr) for manipulate data
+
+```{r echo = F}
+include_graphics("image/dplyr_tidyr.png")
+```
+
+------
+
+[rmarkdown](http://rmarkdown.rstudio.com/) + [knitr](https://yihui.name/knitr/) for report result
+
+```{r echo = F}
+include_graphics("image/rmarkdown.png")
+```
+
+------
 
 # 데이터 분석결과의 공유와 소통 / 데이터의 오픈과 배포
 
 ## 배포의 중요성
 
->- 분석 이후에는 (PT, 강의, 배포등등 어떠한 방법이 되었든) 남에게 알리는 과정이 항상 맞물리게 됨
->- 분석결과가 유의미 해도 이를 아무에게도 알리지 않으면 큰 의미가 없음
+>- 분석 이후에는 (어떠한 방법이 되었든) 남에게 알리는 과정이 항상 맞물리게 됨
+>- 분석결과가 유의미 해도 이를 아무에게도 알리지 않으면 의미가 없음
 
 ## 배포방법의 중요성
 
->- 배포 특성상 완벽성을 기해야 하므로 엄청난 정성과 고통이 필요한 것이 사실
->- 프로그래밍을 이용해 생산성을 끌어올리고 고통에서 벗어날 필요가 있음
+>- 배포 특성상 완벽성을 기해야 하므로 많은 정성과 고통이 필요
+>- 프로그래밍을 이용해 생산성을 끌어올리고 고통에서 벗어나 볼 필요가 있음
 
 ## Reproducible Research
 
@@ -248,4 +282,4 @@ include_graphics("image/rpubs.png")
 
 ------
 
-## Q & A
+# Q & A
